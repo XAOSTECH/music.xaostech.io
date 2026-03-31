@@ -1,0 +1,255 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+const user = Astro.locals.user;
+
+if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
+  return Astro.redirect('/?error=unauthorized');
+}
+
+let error = '';
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const title = formData.get('title')?.toString().trim();
+  const content = formData.get('content')?.toString().trim();
+  const excerpt = formData.get('excerpt')?.toString().trim() || '';
+  const artist = formData.get('artist')?.toString().trim() || '';
+  const album = formData.get('album')?.toString().trim() || '';
+  const genre = formData.get('genre')?.toString().trim() || '';
+  const release_year = formData.get('release_year')?.toString().trim() || null;
+  const listen_url = formData.get('listen_url')?.toString().trim() || null;
+  const cover_image_url = formData.get('cover_image_url')?.toString().trim() || null;
+  const status = formData.get('status')?.toString() || 'draft';
+
+  if (!title || !content) {
+    error = 'Title and content are required.';
+  } else {
+    try {
+      const response = await fetch(new URL('/api/trove', Astro.url.origin), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': Astro.request.headers.get('Cookie') || ''
+        },
+        body: JSON.stringify({
+          title, content, excerpt, artist, album, genre,
+          release_year: release_year ? parseInt(release_year) : null,
+          listen_url, cover_image_url, status
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return Astro.redirect(`/trove/${data.slug}?created=true`);
+      } else {
+        const data = await response.json().catch(() => ({}));
+        error = data.error || 'Failed to create discovery.';
+      }
+    } catch (e: any) {
+      console.error('Failed to create discovery:', e);
+      error = e.message || 'Failed to create discovery.';
+    }
+  }
+}
+---
+
+<Layout title="New Discovery">
+  <div class="container">
+    <a href="/trove" class="back">← Back to Trove</a>
+    
+    <h1>🎵 New Discovery</h1>
+    
+    {error && <div class="error">{error}</div>}
+    
+    <form method="POST" class="post-form">
+      <div class="form-group">
+        <label for="title">Title *</label>
+        <input type="text" id="title" name="title" required placeholder="What did you discover?" />
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="artist">Artist</label>
+          <input type="text" id="artist" name="artist" placeholder="Artist name" />
+        </div>
+        <div class="form-group">
+          <label for="album">Album</label>
+          <input type="text" id="album" name="album" placeholder="Album name" />
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="genre">Genre</label>
+          <input type="text" id="genre" name="genre" placeholder="e.g. jazz, electronic, ambient" />
+        </div>
+        <div class="form-group">
+          <label for="release_year">Release Year</label>
+          <input type="number" id="release_year" name="release_year" min="1900" max="2099" placeholder="2026" />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="listen_url">Listen URL</label>
+        <input type="url" id="listen_url" name="listen_url" placeholder="https://open.spotify.com/... or https://music.apple.com/..." />
+      </div>
+      
+      <div class="form-group">
+        <label for="cover_image_url">Cover Image URL</label>
+        <input type="url" id="cover_image_url" name="cover_image_url" placeholder="https://..." />
+      </div>
+      
+      <div class="form-group">
+        <label for="excerpt">Excerpt</label>
+        <textarea id="excerpt" name="excerpt" rows="2" placeholder="Brief teaser for the discovery..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="content">Content * (Markdown supported)</label>
+        <textarea id="content" name="content" rows="20" required placeholder="Write about what you discovered, why it matters, what stood out..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="draft">Draft</option>
+          <option value="published">Publish Now</option>
+        </select>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Create Discovery</button>
+        <a href="/trove" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</Layout>
+
+<style>
+  .back {
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+  
+  h1 {
+    margin-bottom: 2rem;
+  }
+  
+  .error {
+    background: #ff4444;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .post-form {
+    max-width: 800px;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #ccc;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  }
+  
+  .form-group textarea#content {
+    min-height: 400px;
+  }
+  
+  .form-group select {
+    cursor: pointer;
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .btn-primary {
+    background: var(--primary);
+    color: black;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(246, 130, 31, 0.3);
+  }
+  
+  .btn-secondary {
+    background: transparent;
+    color: #888;
+    padding: 0.75rem 2rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+  
+  .btn-secondary:hover {
+    border-color: #666;
+    text-decoration: none;
+  }
+  
+  @media (max-width: 600px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+      flex-direction: column;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+      text-align: center;
+    }
+  }
+</style>

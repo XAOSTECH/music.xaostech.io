@@ -1,0 +1,51 @@
+name = "xaostech-music"
+compatibility_date = "2025-12-31"
+compatibility_flags = ["nodejs_compat"]
+main = "dist/_worker.js/index.js"
+send_metrics = false
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[env.production]
+name = "xaostech-music"
+compatibility_flags = ["nodejs_compat"]
+main = "dist/_worker.js/index.js"
+routes = [{ pattern = "music.xaostech.io/*", zone_name = "xaostech.io" }]
+
+[env.production.assets]
+directory = "./dist"
+
+[env.production.vars]
+CACHE_TTL = "3600"
+
+[[env.production.services]]
+binding = "API"
+service = "xaostech-api"
+environment = "production"
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "${KV_CACHE_ID}"
+
+[[env.production.kv_namespaces]]
+binding = "SESSIONS_KV"
+id = "${KV_SESSIONS_ID}"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "xaostech-music"
+database_id = "${D1_MUSIC_ID}"
+
+[env.testing]
+routes = [{ pattern = "music.testing.local/*", zone_name = "localhost" }]
+
+[env.testing.vars]
+CACHE_TTL = "3600"

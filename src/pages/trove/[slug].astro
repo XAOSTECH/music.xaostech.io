@@ -1,0 +1,316 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { marked } from 'marked';
+
+const user = Astro.locals.user;
+const { slug } = Astro.params;
+
+const wantsJson = Astro.request.headers.get('Accept')?.includes('application/json') 
+  || Astro.url.searchParams.get('format') === 'json';
+
+let post: any = null;
+let comments: any[] = [];
+
+try {
+  const response = await fetch(new URL(`/api/trove/${slug}`, Astro.url.origin), {
+    headers: {
+      'Cookie': Astro.request.headers.get('Cookie') || ''
+    }
+  });
+  if (response.ok) {
+    const data = await response.json();
+    post = data.post;
+    comments = data.comments || [];
+  }
+} catch (e) {
+  console.error('Failed to fetch trove post:', e);
+}
+
+if (wantsJson) {
+  return new Response(JSON.stringify({ post, comments }), {
+    headers: { 'Content-Type': 'application/json' },
+    status: post ? 200 : 404,
+  });
+}
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+
+const publishDate = post.published_at 
+  ? new Date(post.published_at * 1000).toLocaleDateString('en-US', { 
+      year: 'numeric', month: 'long', day: 'numeric' 
+    }) 
+  : '';
+
+const canEdit = user && (user.role === 'owner' || user.role === 'admin' || user.id === post.author_id);
+
+const contentHtml = marked.parse(post.content || '');
+---
+
+<Layout title={post.title} description={post.excerpt || post.title} image={post.cover_image_url}>
+  <div class="container">
+    <a href="/trove" class="back">← Back to Trove</a>
+    
+    <header>
+      <h1>{post.title}</h1>
+      {(post.artist || post.album) && (
+        <div class="music-info">
+          {post.artist && <span class="artist">{post.artist}</span>}
+          {post.artist && post.album && <span class="sep">&mdash;</span>}
+          {post.album && <span class="album">{post.album}</span>}
+          {post.release_year && <span class="year">({post.release_year})</span>}
+        </div>
+      )}
+      {post.genre && <span class="genre-tag">{post.genre}</span>}
+      <div class="meta">
+        <div class="author">
+          <img 
+            src={post.author_avatar || '/favicon.png'} 
+            alt={post.author_name || 'Author'} 
+            class="author-avatar"
+          />
+          <span>{post.author_name || 'Author'}</span>
+        </div>
+        <time>{publishDate}</time>
+      </div>
+    </header>
+    
+    {post.cover_image_url && (
+      <img src={post.cover_image_url} alt={post.title} class="cover-image" />
+    )}
+    
+    {post.listen_url && (
+      <div class="listen-cta">
+        <a href={post.listen_url} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          🎧 Listen
+        </a>
+      </div>
+    )}
+    
+    <article class="content" set:html={contentHtml} />
+    
+    {canEdit && (
+      <a href={`/trove/${post.id}/edit`} class="edit-btn">✏️ Edit</a>
+    )}
+    
+    <section class="comments-section">
+      <h3>💬 Comments ({comments.length})</h3>
+      {comments.length > 0 ? (
+        <div class="comments">
+          {comments.map((comment: any) => (
+            <div class="comment">
+              <div class="comment-meta">
+                <strong>{comment.author_name || 'Anonymous'}</strong>
+                <time>{new Date(comment.created_at * 1000).toLocaleDateString()}</time>
+              </div>
+              <p>{comment.content}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="no-comments">No comments yet. Be the first!</p>
+      )}
+    </section>
+  </div>
+  
+  <footer>
+    <a href="https://xaostech.io">← Back to XAOSTECH</a>
+  </footer>
+</Layout>
+
+<style>
+  .back {
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+  
+  header {
+    margin-bottom: 2rem;
+  }
+  
+  header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  
+  .music-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.15rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .sep {
+    opacity: 0.5;
+  }
+  
+  .year {
+    opacity: 0.6;
+    font-size: 0.95rem;
+  }
+  
+  .genre-tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(246, 130, 31, 0.15);
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+  }
+  
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #888;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+  }
+  
+  .author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .author-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+  }
+  
+  .cover-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin: 2rem 0;
+  }
+  
+  .listen-cta {
+    margin-bottom: 2rem;
+  }
+  
+  .content {
+    font-size: 1.1rem;
+  }
+  
+  .content :global(h1),
+  .content :global(h2),
+  .content :global(h3) {
+    margin: 2rem 0 1rem;
+    color: var(--primary);
+  }
+  
+  .content :global(p) {
+    margin-bottom: 1.5rem;
+  }
+  
+  .content :global(a) {
+    color: var(--primary);
+  }
+  
+  .content :global(code) {
+    background: #222;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  
+  .content :global(pre) {
+    background: #111;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+  
+  .content :global(pre code) {
+    background: transparent;
+    padding: 0;
+  }
+  
+  .content :global(ul),
+  .content :global(ol) {
+    margin: 1rem 0 1.5rem 2rem;
+  }
+  
+  .content :global(li) {
+    margin-bottom: 0.5rem;
+  }
+  
+  .content :global(blockquote) {
+    border-left: 4px solid var(--primary);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    opacity: 0.9;
+  }
+  
+  .edit-btn {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.5rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+  
+  .edit-btn:hover {
+    border-color: var(--primary);
+    text-decoration: none;
+  }
+  
+  .comments-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  .comments-section h3 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .comments {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .comment {
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .comment-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #888;
+  }
+  
+  .no-comments {
+    color: #666;
+    font-style: italic;
+  }
+  
+  footer {
+    text-align: center;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    opacity: 0.5;
+    font-size: 0.85rem;
+  }
+</style>

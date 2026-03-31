@@ -1,0 +1,104 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import UserSection from '@/components/UserSection.astro';
+import TroveCard from '@/components/TroveCard.astro';
+
+const user = Astro.locals.user;
+
+let posts: any[] = [];
+
+try {
+  const response = await fetch(new URL('/api/trove?limit=5', Astro.url.origin), {
+    headers: {
+      'Cookie': Astro.request.headers.get('Cookie') || ''
+    }
+  });
+  if (response.ok) {
+    const data = await response.json();
+    posts = data.posts || [];
+  }
+} catch (e) {
+  console.error('Failed to fetch trove posts:', e);
+}
+---
+
+<Layout title="Music">
+  <div class="container">
+    <header>
+      <h1>🎵 XAOSTECH Music</h1>
+      <p class="subtitle">Sonic explorations and new discoveries</p>
+    </header>
+    
+    <UserSection user={user} showNewPost={true} />
+    
+    <section class="trove-section">
+      <h2 class="section-title">Latest from the Trove</h2>
+      {posts.length > 0 ? (
+        <div class="trove-list">
+          {posts.map((post) => <TroveCard post={post} />)}
+        </div>
+      ) : (
+        <p class="no-posts">No discoveries yet. Check back soon!</p>
+      )}
+    </section>
+    
+    {posts.length > 0 && (
+      <div class="view-all">
+        <a href="/trove" class="btn btn-secondary">Browse the Trove →</a>
+      </div>
+    )}
+  </div>
+  
+  <footer>
+    <a href="https://xaostech.io">← Back to XAOSTECH</a>
+  </footer>
+</Layout>
+
+<style>
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  header h1 {
+    color: var(--primary);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    opacity: 0.7;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+  }
+  
+  .trove-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .no-posts {
+    text-align: center;
+    opacity: 0.6;
+    padding: 3rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+  }
+  
+  .view-all {
+    text-align: center;
+    margin-top: 2rem;
+  }
+  
+  footer {
+    text-align: center;
+    margin-top: 4rem;
+    opacity: 0.5;
+    font-size: 0.85rem;
+  }
+</style>

@@ -1,0 +1,21 @@
+{
+  "name": "xaostech-music",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build"
+  },
+  "dependencies": {
+    "astro": "latest",
+    "@astrojs/cloudflare": "latest",
+    "hono": "latest",
+    "zod": "latest",
+    "marked": "latest"
+  },
+  "devDependencies": {
+    "@astrojs/check": "latest",
+    "typescript": "latest",
+    "wrangler": "latest"
+  }
+}

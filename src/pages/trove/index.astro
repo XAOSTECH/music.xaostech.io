@@ -1,0 +1,152 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import UserSection from '@/components/UserSection.astro';
+import TroveCard from '@/components/TroveCard.astro';
+
+const user = Astro.locals.user;
+
+// Pagination
+const page = parseInt(Astro.url.searchParams.get('page') || '1');
+const limit = 10;
+const offset = (page - 1) * limit;
+const genre = Astro.url.searchParams.get('genre') || '';
+
+let posts: any[] = [];
+let total = 0;
+let pages = 1;
+
+try {
+  let apiUrl = `/api/trove?limit=${limit}&offset=${offset}`;
+  if (genre) apiUrl += `&genre=${encodeURIComponent(genre)}`;
+  
+  const response = await fetch(new URL(apiUrl, Astro.url.origin), {
+    headers: {
+      'Cookie': Astro.request.headers.get('Cookie') || ''
+    }
+  });
+  if (response.ok) {
+    const data = await response.json();
+    posts = data.posts || [];
+    total = data.total || posts.length;
+    pages = Math.ceil(total / limit);
+  }
+} catch (e) {
+  console.error('Failed to fetch trove posts:', e);
+}
+---
+
+<Layout title="The Trove" description="Recurring discoveries of new music, deep dives, and sonic explorations">
+  <div class="container">
+    <a href="/" class="back">← Home</a>
+    
+    <header>
+      <h1>🎶 The Trove</h1>
+      <p class="subtitle">A recurring blog on new music discoveries</p>
+      <UserSection user={user} showNewPost={true} />
+    </header>
+    
+    {genre && (
+      <div class="filter-active">
+        Filtering by: <strong>{genre}</strong>
+        <a href="/trove" class="clear-filter">✕ Clear</a>
+      </div>
+    )}
+    
+    <section class="posts">
+      {posts.length > 0 ? (
+        posts.map((post) => <TroveCard post={post} />)
+      ) : (
+        <p class="no-posts">No discoveries yet. Check back soon!</p>
+      )}
+    </section>
+    
+    {pages > 1 && (
+      <nav class="pagination">
+        {page > 1 && (
+          <a href={`/trove?page=${page - 1}${genre ? `&genre=${genre}` : ''}`} class="btn btn-secondary">← Previous</a>
+        )}
+        <span class="page-info">Page {page} of {pages}</span>
+        {page < pages && (
+          <a href={`/trove?page=${page + 1}${genre ? `&genre=${genre}` : ''}`} class="btn btn-secondary">Next →</a>
+        )}
+      </nav>
+    )}
+  </div>
+  
+  <footer>
+    <a href="https://xaostech.io">← Back to XAOSTECH</a>
+  </footer>
+</Layout>
+
+<style>
+  .back {
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  
+  header {
+    margin-bottom: 2rem;
+  }
+  
+  header h1 {
+    color: var(--primary);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+  }
+  
+  .filter-active {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .clear-filter {
+    margin-left: auto;
+    font-size: 0.85rem;
+    opacity: 0.7;
+  }
+  
+  .posts {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .no-posts {
+    text-align: center;
+    opacity: 0.6;
+    padding: 3rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .page-info {
+    opacity: 0.6;
+  }
+  
+  footer {
+    text-align: center;
+    margin-top: 3rem;
+    opacity: 0.5;
+    font-size: 0.85rem;
+  }
+</style>
