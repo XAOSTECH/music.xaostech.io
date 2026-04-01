@@ -1,7 +1,6 @@
-import { defineMiddleware, sequence } from 'astro:middleware';
-import { applySecurityHeaders } from '../shared/types/security';
+import { defineMiddleware } from 'astro:middleware';
 
-const sessionMiddleware = defineMiddleware(async (context, next) => {
+export const onRequest = defineMiddleware(async (context, next) => {
   const { cookies, locals } = context;
   const path = new URL(context.request.url).pathname;
 
@@ -23,8 +22,8 @@ const sessionMiddleware = defineMiddleware(async (context, next) => {
         const session = JSON.parse(sessionData);
         if (!session.expires || session.expires > Date.now()) {
           locals.user = {
-            id: session.userId || session.id,
-            userId: session.userId || session.id,
+            id: session.user_id || session.userId || session.id,
+            userId: session.user_id || session.userId || session.id,
             email: session.email || '',
             username: session.username,
             role: session.role || 'user',
@@ -42,10 +41,3 @@ const sessionMiddleware = defineMiddleware(async (context, next) => {
   locals.user = null;
   return next();
 });
-
-const securityMiddleware = defineMiddleware(async (_context, next) => {
-  const res = await next();
-  return applySecurityHeaders(res);
-});
-
-export const onRequest = sequence(sessionMiddleware, securityMiddleware);
