@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
+import { env as cfEnv } from 'cloudflare:workers';
 
-const proxyToAPI = async (locals: any, path: string, init?: RequestInit) => {
-  const api = locals.runtime?.env?.API;
+const proxyToAPI = async (path: string, init?: RequestInit) => {
+  const api = (cfEnv as { API?: { fetch: typeof fetch } }).API;
   if (!api) {
     return new Response(JSON.stringify({ error: 'API service not configured' }), {
       status: 503,
@@ -29,7 +30,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
   let path = `/music/trove?limit=${limit}&offset=${offset}`;
   if (genre) path += `&genre=${encodeURIComponent(genre)}`;
 
-  return proxyToAPI(locals, path);
+  return proxyToAPI(path);
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -45,7 +46,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const body = await request.text();
   const cookies = request.headers.get('Cookie') || '';
 
-  return proxyToAPI(locals, '/music/trove', {
+  return proxyToAPI('/music/trove', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
