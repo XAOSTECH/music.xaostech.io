@@ -1,4 +1,5 @@
 import { defineMiddleware } from 'astro:middleware';
+import { env as cfEnv } from 'cloudflare:workers';
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { cookies, locals } = context;
@@ -8,8 +9,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
-  const runtime = locals.runtime;
-  if (!runtime?.env?.SESSIONS_KV) {
+  const env = cfEnv as unknown as { SESSIONS_KV?: KVNamespace };
+  if (!env?.SESSIONS_KV) {
     locals.user = null;
     return next();
   }
@@ -17,7 +18,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const sessionId = cookies.get('session_id')?.value;
   if (sessionId) {
     try {
-      const sessionData = await runtime.env.SESSIONS_KV.get(sessionId);
+      const sessionData = await env.SESSIONS_KV.get(sessionId);
       if (sessionData) {
         const session = JSON.parse(sessionData);
         if (!session.expires || session.expires > Date.now()) {
