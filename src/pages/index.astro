@@ -24,77 +24,140 @@ try {
 
 <Layout title="Music">
   <div class="container">
-    <header>
+    <header class="hero">
       <h1>🎵 XAOSTECH Music</h1>
-      <p class="subtitle">Sonic explorations and new discoveries</p>
+      <p class="subtitle">Sonic explorations, recurring deep dives, and discoveries from across the spectrum.</p>
     </header>
-    
+
     <UserSection user={user} showNewPost={true} />
-    
+
+    <section class="about">
+      <h2 class="section-title">What lives here</h2>
+      <ul class="about-grid">
+        <li>
+          <strong>The Trove</strong>
+          <span>A recurring blog of new music finds — albums, artists, and the occasional rabbit hole.</span>
+        </li>
+        <li>
+          <strong>Sets &amp; Sessions</strong>
+          <span>Listening sessions and curated runs around a single mood or genre. (coming soon)</span>
+        </li>
+        <li>
+          <strong>Notes</strong>
+          <span>Short writeups: why a record matters, what it sits next to, where to start.</span>
+        </li>
+      </ul>
+    </section>
+
     <section class="trove-section">
-      <h2 class="section-title">Latest from the Trove</h2>
+      <div class="section-head">
+        <h2 class="section-title">Latest from the Trove</h2>
+        <a href="/trove" class="link-muted">All discoveries →</a>
+      </div>
       {posts.length > 0 ? (
         <div class="trove-list">
           {posts.map((post) => <TroveCard post={post} />)}
         </div>
       ) : (
-        <p class="no-posts">No discoveries yet. Check back soon!</p>
+        <div class="empty">
+          <p>No discoveries posted yet.</p>
+          {user && (user.role === 'admin' || user.role === 'owner') && (
+            <a href="/trove/new" class="btn btn-primary">Write the first one</a>
+          )}
+        </div>
       )}
     </section>
-    
-    {posts.length > 0 && (
-      <div class="view-all">
-        <a href="/trove" class="btn btn-secondary">Browse the Trove →</a>
-      </div>
-    )}
   </div>
-  
+
   <footer>
     <a href="https://xaostech.io">← Back to XAOSTECH</a>
   </footer>
 </Layout>
 
 <style>
-  header {
+  .hero {
     text-align: center;
     margin-bottom: 2rem;
   }
-  
-  header h1 {
+
+  .hero h1 {
     color: var(--primary);
-    font-size: 2.5rem;
+    font-size: 2.75rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .subtitle {
-    opacity: 0.7;
+    opacity: 0.75;
+    max-width: 42rem;
+    margin: 0 auto;
   }
-  
-  .section-title {
-    font-size: 1.3rem;
-    margin-bottom: 1.5rem;
+
+  .about {
+    margin: 2.5rem 0;
+  }
+
+  .about-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .about-grid li {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .about-grid strong {
     color: var(--primary);
   }
-  
+
+  .about-grid span {
+    opacity: 0.75;
+    font-size: 0.9rem;
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1.5rem;
+  }
+
+  .link-muted {
+    opacity: 0.7;
+    font-size: 0.9rem;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+    color: var(--primary);
+  }
+
   .trove-list {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
   }
-  
-  .no-posts {
+
+  .empty {
     text-align: center;
-    opacity: 0.6;
+    opacity: 0.85;
     padding: 3rem;
     background: var(--card-bg);
     border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
-  
-  .view-all {
-    text-align: center;
-    margin-top: 2rem;
-  }
-  
+
   footer {
     text-align: center;
     margin-top: 4rem;
