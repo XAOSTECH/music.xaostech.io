@@ -39,11 +39,6 @@ id = "${KV_CACHE_ID}"
 binding = "SESSIONS_KV"
 id = "${KV_SESSIONS_ID}"
 
-[[env.production.d1_databases]]
-binding = "DB"
-database_name = "xaostech-music"
-database_id = "${D1_MUSIC_ID}"
-
 [env.testing]
 routes = [{ pattern = "music.testing.local/*", zone_name = "localhost" }]
 
