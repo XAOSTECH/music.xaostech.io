@@ -73,3 +73,13 @@ GPL-3.0. See [LICENCE](https://github.com/XAOSTECH/music.xaostech.io/blob/main/L
 <p align="center">
   <a href="https://github.com/XAOSTECH/music.xaostech.io">XAOSTECH/music.xaostech.io</a>
 </p>
+
+<!-- TREE-VIZ-START -->
+
+## Git Tree Visualisation
+
+![Git Tree Visualisation](../.github/static/tree-viz/git-tree-mini.svg)
+
+[Full SVG](../.github/static/tree-viz/git-tree.svg) · [Interactive version](../.github/static/tree-viz/git-tree.html) · [View data](../.github/static/tree-viz/git-tree-data.json)
+
+<!-- TREE-VIZ-END -->

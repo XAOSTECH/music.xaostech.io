@@ -1,0 +1,193 @@
+{
+  "metadata": {
+    "repository": "music.xaostech.io",
+    "current_branch": "main",
+    "repo_url": "https://github.com/XAOSTECH/music.xaostech.io",
+    "generated": "2026-10-13T22:03:26Z",
+    "max_commits": 500
+  },
+  "commits": [
+  {
+    "sha": "bbfc43f079dd516a38879ecd03f63b0de3c96586",
+    "short": "bbfc43f",
+    "parents": "23804236e49495c96d05ca1db3a68190907340bc",
+    "author": "xaoscience",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-10-14T00:03:26+02:00",
+    "timestamp": 1791929006,
+    "subject": "chore(dc-init): update workflows,actions",
+    "refs": "HEAD -> main, origin/main"
+  },
+  {
+    "sha": "23804236e49495c96d05ca1db3a68190907340bc",
+    "short": "2380423",
+    "parents": "7b36b4a4c9ba1d2079799f5e9176a92156e5a347",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-23T21:57:13Z",
+    "timestamp": 1776981433,
+    "subject": "feat(music): hero/about section + graceful empty Trove with first-post CTA for admins",
+    "refs": ""
+  },
+  {
+    "sha": "7b36b4a4c9ba1d2079799f5e9176a92156e5a347",
+    "short": "7b36b4a",
+    "parents": "8fd8f82245871f4d4a3b59802c3109780eb46cb3",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-23T21:32:27Z",
+    "timestamp": 1776979947,
+    "subject": "fix(music): drop unused D1 binding",
+    "refs": ""
+  },
+  {
+    "sha": "8fd8f82245871f4d4a3b59802c3109780eb46cb3",
+    "short": "8fd8f82",
+    "parents": "9f5d822daaa5181649fab37172d066bbef769729",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-23T21:25:20Z",
+    "timestamp": 1776979520,
+    "subject": "fix(wrangler): main = '@astrojs/cloudflare/entrypoints/server' so @cloudflare/vite-plugin's pre-build maybeResolveMain check passes (matches account.xaostech.io)",
+    "refs": ""
+  },
+  {
+    "sha": "9f5d822daaa5181649fab37172d066bbef769729",
+    "short": "9f5d822",
+    "parents": "81381e3dee46866a93ec8b4833e387528356984a",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-23T20:58:25Z",
+    "timestamp": 1776977905,
+    "subject": "fix(astro): pin imageService:'compile' + sessionKVBindingName + prerenderEnvironment to match account; avoids @cloudflare/vite-plugin pre-build main check on 13.2",
+    "refs": ""
+  },
+  {
+    "sha": "81381e3dee46866a93ec8b4833e387528356984a",
+    "short": "81381e3",
+    "parents": "031f5cd3ec39a2cd0caaf13116f2b0248fa4ed82",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-22T01:45:56Z",
+    "timestamp": 1776822356,
+    "subject": "fix(500): migrate locals.runtime.env -> import { env } from 'cloudflare:workers'",
+    "refs": ""
+  },
+  {
+    "sha": "031f5cd3ec39a2cd0caaf13116f2b0248fa4ed82",
+    "short": "031f5cd",
+    "parents": "133716322a79070c5c1eabc1715b15afe561a38c",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-22T01:40:05Z",
+    "timestamp": 1776822005,
+    "subject": "csp: revert Astro security.csp; emit CSP from middleware (rationale in shared/types/security.ts)",
+    "refs": ""
+  },
+  {
+    "sha": "133716322a79070c5c1eabc1715b15afe561a38c",
+    "short": "1337163",
+    "parents": "561b31520366f768dab88f5bf400adf1772b7424",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-22T01:04:15Z",
+    "timestamp": 1776819855,
+    "subject": "csp: enable Astro security.csp integration",
+    "refs": ""
+  },
+  {
+    "sha": "561b31520366f768dab88f5bf400adf1772b7424",
+    "short": "561b315",
+    "parents": "ddcd5f2201454b92063ce6b55163795408305780",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-19T19:23:35Z",
+    "timestamp": 1776626615,
+    "subject": "fix: add disable_nodejs_process_v2 compat flag",
+    "refs": ""
+  },
+  {
+    "sha": "ddcd5f2201454b92063ce6b55163795408305780",
+    "short": "ddcd5f2",
+    "parents": "af34c289dc3bc1feba6f7f3b86dcee1fa5858a59",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-19T17:47:03Z",
+    "timestamp": 1776620823,
+    "subject": "fix(wrangler): point main to dist/server/entry.mjs and assets to dist/client",
+    "refs": ""
+  },
+  {
+    "sha": "af34c289dc3bc1feba6f7f3b86dcee1fa5858a59",
+    "short": "af34c28",
+    "parents": "306e4bf5f72aefedbd334bccef33d5695da1efd5",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-19T17:39:41Z",
+    "timestamp": 1776620381,
+    "subject": "fix(wrangler): drop top-level main; vite plugin pre-validates it before astro build emits dist/",
+    "refs": ""
+  },
+  {
+    "sha": "306e4bf5f72aefedbd334bccef33d5695da1efd5",
+    "short": "306e4bf",
+    "parents": "c09ef99b2262eec966399bcd461c9386fbce96a3",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-19T17:12:22Z",
+    "timestamp": 1776618742,
+    "subject": "fix(wrangler): add main pointing to Astro CF adapter worker output",
+    "refs": ""
+  },
+  {
+    "sha": "c09ef99b2262eec966399bcd461c9386fbce96a3",
+    "short": "c09ef99",
+    "parents": "7eeb50f9b23884b2fc4bb68c906af83ab15807ca",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-01T20:22:06Z",
+    "timestamp": 1775074926,
+    "subject": "fix: remove applySecurityHeaders middleware (caused runtime 500)",
+    "refs": ""
+  },
+  {
+    "sha": "7eeb50f9b23884b2fc4bb68c906af83ab15807ca",
+    "short": "7eeb50f",
+    "parents": "ba0e796d77a5e77c7d1691d03133050d48d1855b",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-04-01T18:53:07Z",
+    "timestamp": 1775069587,
+    "subject": "fix: remove main field from wrangler.toml for @astrojs/cloudflare@13 compat",
+    "refs": ""
+  },
+  {
+    "sha": "ba0e796d77a5e77c7d1691d03133050d48d1855b",
+    "short": "ba0e796",
+    "parents": "2ce32685da654efef30ed4b9d679360b071cc832",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-03-31T20:34:06Z",
+    "timestamp": 1774989246,
+    "subject": "fix: add security headers to middleware via shared applySecurityHeaders",
+    "refs": ""
+  },
+  {
+    "sha": "2ce32685da654efef30ed4b9d679360b071cc832",
+    "short": "2ce3268",
+    "parents": "",
+    "author": "XAOSTECH",
+    "email": "69734795+xaoscience@users.noreply.github.com",
+    "date": "2026-03-31T20:02:21Z",
+    "timestamp": 1774987341,
+    "subject": "Initial commit",
+    "refs": ""
+  }
+],
+  "branches": [
+  {"name":"bbfc43f079dd516a38879ecd03f63b0de3c96586 chore(dc-init): update workflows,actions","sha":"*","current":false,"merged":false}
+],
+  "tags": [
+
+]
+}
